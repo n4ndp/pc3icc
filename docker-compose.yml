@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: mysql:8.0
@@ -11,10 +13,13 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   adminer:
     image: adminer
@@ -22,6 +27,31 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: flask_app
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app
+    environment:
+      - FLASK_ENV=production
+      - MYSQL_HOST=db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DB=db01
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app_network
 

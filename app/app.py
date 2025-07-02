@@ -12,7 +12,7 @@ app.secret_key = 'mys3cr3tk3y'
 
 load_dotenv()
 
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'db')
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'user')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'password')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'db01')
